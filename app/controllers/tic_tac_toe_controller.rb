@@ -5,13 +5,11 @@ class TicTacToeController < ActionController::Base
 
     #play game between player one and player two in same page 
     def index
-        render layout: 'tic_tac_toe'
     end
 
 
     #multiplayer if player using different webpage
     def multiplayer
-        render layout: 'tic_tac_toe_multiplayer'
     end
 
     def createOrJoinRoom
@@ -87,9 +85,11 @@ class TicTacToeController < ActionController::Base
     def resolve_layout
         case action_name
         when "index"
-            "index"
-        when "game"
             "tic_tac_toe"
+        when "multiplayer"
+            "tic_tac_toe_multiplayer"
+        when "game"
+            "tic_tac_toe_multiplayer"
         else
             "application"
         end
