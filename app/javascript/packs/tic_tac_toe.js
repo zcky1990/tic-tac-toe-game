@@ -1,6 +1,3 @@
-// import { gameChannelSubscription } from "channels/game_channel"
-import consumer from "channels/consumer";
-
 document.addEventListener("DOMContentLoaded", function(event) { 
     const game = {
         isGameOngoing: false,
