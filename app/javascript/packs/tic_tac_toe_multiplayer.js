@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         updateUserState();
         checkGameStatus();
         if (game.winner != 'none') {
-            let currentPlayer = (game.activePlayer == "playerOne") ? game.playerOne : game.playerTwo ;
+            let currentPlayer = (game.winner == "playerOne") ? game.playerOne : game.playerTwo ;
             setmessage('Congratulation '+currentPlayer.name +' Wins the Game');
         }
         if (game.isDraw == true){
@@ -231,7 +231,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     const endBtn = document.getElementById('endTurn');
     endBtn.addEventListener('click', function(){
-        console.log('skip turn')
         let currentPlayer = (game.activePlayer == "playerOne") ? game.playerOne : game.playerTwo ;
         let isPlayerOne = currentPlayer.isPlayerOne
         if(isPlayerOne){
