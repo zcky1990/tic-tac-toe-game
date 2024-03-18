@@ -1,0 +1,10 @@
+<div class="container mx-auto h-screen">
+    <div class="flex flex-col p-5 place-content-center text-center content-center h-full">
+        <%= form_with do |form| %>
+            <div class="flex flex-col p-5 place-content-center text-center items-center content-center h-full gap-2">
+                <div class="text-3xl text-center rounded-full">Welcome to TicTacToe Game Test</div>
+                <div class="text-3xl text-center rounded-full">Click Join to Enter Game</div>
+                <%= form.submit "Join", class: "py-2 px-5 bg-blue-500 w-fit text-center rounded-full text-white" %>
+            </div>
+        <% end %>
+</div>

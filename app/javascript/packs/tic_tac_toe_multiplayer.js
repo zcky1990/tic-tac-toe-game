@@ -27,12 +27,46 @@ document.addEventListener("DOMContentLoaded", function(event) {
         board:[['', '', ''], ['', '', ''], ['', '', '']]
     }
 
+    function updateState(data){
+        game.isGameOngoing = data.isGameOngoing
+        game.activePlayer = data.activePlayer
+        game.status= data.status
+        game.playerOne = data.playerOne
+        game.playerTwo = data.playerTwo
+        game.board = data.board
+        game.winner = data.winner
+        game.isDraw = data.isDraw
+        refreshBoard()
+        updateUserState();
+        checkGameStatus();
+        if (game.winner != 'none') {
+            let currentPlayer = (game.activePlayer == "playerOne") ? game.playerOne : game.playerTwo ;
+            alert(`${currentPlayer.name} wins!!`); 
+        }
+        if (game.isDraw == true){
+            alert(`Nobody wins!!`); 
+        }
+        setPlayerState();
+    }
+
+    function setPlayerState(){
+        const searchParams = new URLSearchParams(window.location.search);
+        let player = searchParams.get('player');
+        if (player == 'playerOne'){
+            playerTwoNameInput.disabled = true;
+            readyPlayerTwoBtn.classList.add('disabled');
+            readyPlayerTwoBtn.classList.add('opacity-25');
+        }else if (player == 'playerTwo') {
+            playerOneNameInput.disabled = true;
+            readyPlayerOneBtn.classList.add('disabled');
+            readyPlayerOneBtn.classList.add('opacity-25');
+        }
+    }
+
     const elements = document.querySelectorAll(".tile"); 
     for(let i= 0 ; i < elements.length; i++){
         elements[i].addEventListener('click', function(){
-            if (game.winner == 'none' && game.isDraw == false){
-                move(this)
-            }
+            move(this)
         });
     }
 
@@ -62,6 +96,12 @@ document.addEventListener("DOMContentLoaded", function(event) {
     }
 
     function move(element){
+        const searchParams = new URLSearchParams(window.location.search);
+        let player = searchParams.get('player');
+        if (player !== game.activePlayer ) {
+            alert('another player turn');
+            return false
+        }
         if (!game.isGameOngoing) return false
         if (element.innerText !== '') return false;
         let pos = element.getAttribute('name');
@@ -71,41 +111,38 @@ document.addEventListener("DOMContentLoaded", function(event) {
         let isPlayerOne = currentPlayer.isPlayerOne
         
         game.board[row][col] = currentPlayer.value;
+        refreshBoard();
+
+        if(checkWinner()){
+            game.winner = game.activePlayer
+        }
+
+        if (checkDraw()){
+            game.isDraw = true
+        }
         
         if(isPlayerOne){
             game.activePlayer = "playerTwo";
         }else{
             game.activePlayer = "playerOne";
         }
-        checkGameStatus();
-        refreshBoard();
-        
+        sendState();
+    }
+
+    function checkDraw() {
+        return [...elements].every(element => element.innerText !== '');
+    }
+
+    function checkWinner() {
         const winningConditions = [
-            [0, 1, 2], [3, 4, 5], [6, 7, 8],
-            [0, 3, 6], [1, 4, 7], [2, 5, 8],
-            [0, 4, 8], [2, 4, 6]
+          [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows combination
+          [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns combination
+          [0, 4, 8], [2, 4, 6]             // Diagonals combination
         ];
-        
-
-        let playerWins = winningConditions.some(combination =>
+        let currentPlayer = (game.activePlayer == "playerOne") ? game.playerOne : game.playerTwo ;
+        return winningConditions.some(combination =>
             combination.every(index => elements[index].innerText === currentPlayer.value)
-        )
-        if(playerWins == true){
-            game.winner = game.activePlayer
-        }
-
-        if (game.winner != 'none') {
-            setmessage('Congratulation '+currentPlayer.name +' Wins the Game');
-        }
-
-        let isDraw = [...elements].every(element => element.innerText !== '');
-        if (isDraw == true){
-            game.isDraw = true
-        }
-
-        if (game.isDraw == true){
-            setmessage("Nobody wins!!, please reset your game to start a new game")
-        }
+        );
     }
 
     function resetUserState(){
@@ -132,18 +169,15 @@ document.addEventListener("DOMContentLoaded", function(event) {
     }
 
     function checkGameStatus(){
-        if(game.winner == 'none' && game.isDraw == false) {
-            if (game.playerOne.isReady === true && game.playerTwo.isReady === false){
-                setmessage('Player 1 Ready, Waiting for oponent');
-            }else if(game.playerOne.isReady === false && game.playerTwo.isReady === true){
-                setmessage('Player 2 Ready, Waiting for oponent');
-            }else if(game.playerOne.isReady === true && game.playerTwo.isReady === true){
-                let currentPlayer = (game.activePlayer == "playerOne") ? game.playerOne : game.playerTwo ;
-                setmessage(currentPlayer.name +' turn');
-                game.isGameOngoing = true;
-            }else {
-                setmessage('Waiting For Player To Get Ready');
-            }
+        if (game.playerOne.isReady === true && game.playerTwo.isReady === false){
+            setmessage('Player 1 Ready, Waiting for oponent');
+        }else if(game.playerOne.isReady === false && game.playerTwo.isReady === true){
+            setmessage('Player 2 Ready, Waiting for oponent');
+        }else if(game.playerOne.isReady === true && game.playerTwo.isReady === true){
+            setmessage('Game Start');
+            game.isGameOngoing = true;
+        }else {
+            setmessage('Waiting For Player To Get Ready');
         }
     }
 
@@ -158,7 +192,13 @@ document.addEventListener("DOMContentLoaded", function(event) {
         readyPlayerOneBtn.classList.add('opacity-25');
         readyPlayerOneBtn.classList.add('disabled');
         checkGameStatus();
+        sendState();
     });
+
+    function updateUserState(){
+        playerOneName.innerText = game.playerOne.name;
+        playerTwoName.innerText = game.playerTwo.name;
+    }
 
     const playerTwoName= document.querySelector("#player-2-name"); 
     const readyPlayerTwoBtn = document.querySelector('#changeNamePlayerTwo');
@@ -171,6 +211,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         readyPlayerTwoBtn.classList.add('disabled');
         readyPlayerTwoBtn.classList.add('opacity-25');
         checkGameStatus();
+        sendState();
     });
 
     const resetBtn = document.getElementById("resetButton");
@@ -179,6 +220,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         resetUIState();
         resetBoard();
         resetGameData();
+        sendState();
         
     })
 
@@ -192,6 +234,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         }else{
             game.activePlayer = "playerOne";
         }
+        sendState();
     })
 
     function resetGameData(){
@@ -218,6 +261,59 @@ document.addEventListener("DOMContentLoaded", function(event) {
         },
         game.board=[['', '', ''], ['', '', ''], ['', '', '']]
     }
-    
+
+    function getCookie(cname) {
+        let name = cname + "=";
+        let ca = document.cookie.split(';');
+        for(let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    }
+
+    function sendState(){
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == XMLHttpRequest.DONE) { 
+                if (xhr.status == 200) {
+                    console.log('send data to broadcaster')
+                }
+                else if (xhr.status == 400) {
+                    console.log('Error send data to broadcaste');
+                }
+                else {
+                    console.log('Error send data to broadcaste');
+                }
+            }
+        };
+        const room_id = getCookie("room_id");
+        const postData = {
+            channel_id: `room_${room_id}`,
+            data: game
+        }
+        xhr.open("POST", "/move", true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify(postData));
+    }
+
     initBoard();
+    setPlayerState();
+
+    //set action cable to subscribe
+    const room_id = getCookie("room_id");
+    consumer.subscriptions.create({ channel: 'GameChannel', id: room_id }, {
+        connected() {
+            console.log("Connected to GameChannel with room id :"+ room_id);
+        },
+        received(data) {
+            console.log("Received data:", data);
+            updateState(data);
+        }
+    });
 });

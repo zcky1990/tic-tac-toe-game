@@ -3,10 +3,15 @@ class TicTacToeController < ActionController::Base
 
     skip_before_action :verify_authenticity_token, only: :move
 
-
+    #play game between player one and player two in same page 
     def index
-        # random_id = createGameRoomId()
-        # $redis.set("room_#{random_id}", {isGameOngoing: false}.to_s)
+        render layout: 'tic_tac_toe'
+    end
+
+
+    #multiplayer if player using different webpage
+    def multiplayer
+        render layout: 'tic_tac_toe_multiplayer'
     end
 
     def createOrJoinRoom
@@ -46,6 +51,7 @@ class TicTacToeController < ActionController::Base
     end
 
     def game
+        render layout: 'tic_tac_toe_multiplayer'
     end
 
     def move
