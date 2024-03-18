@@ -7,8 +7,16 @@ Run this application run this command :
 rails s
 `
 
-To play this game: 
-- Player one open browser in 1 page
-- Player two open in another page
-- Klik join to enter gameroom
-- Wait for every player klik ready
+This application have two play mode :
+- Play in same page
+- Play in different page
+
+To play in same page:
+- open browser, and access `localhost:3000`
+
+To play multiplayer on different page : 
+- Player one open browser, and access `localhost:3000/multiplayer` and click join
+- Player one will be redirect to gameroom and will wait for player two
+- Player two open browser, and access `localhost:3000/multiplayer` and click join
+- Player two will joining to player one gameroom
+- Wait for every player klik ready and play the game

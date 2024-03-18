@@ -104,7 +104,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         }
 
         if (game.isDraw == true){
-            setmessage("Nobody wins!!, please reset your game to start a new game")
+            setmessage("Nobody wins!! Please reset your game to start a new game")
         }
     }
 

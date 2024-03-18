@@ -41,10 +41,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
         checkGameStatus();
         if (game.winner != 'none') {
             let currentPlayer = (game.activePlayer == "playerOne") ? game.playerOne : game.playerTwo ;
-            alert(`${currentPlayer.name} wins!!`); 
+            setmessage('Congratulation '+currentPlayer.name +' Wins the Game');
         }
         if (game.isDraw == true){
-            alert(`Nobody wins!!`); 
+            setmessage("Nobody wins!! Please reset your game to start a new game")
         }
         setPlayerState();
     }
@@ -66,7 +66,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
     const elements = document.querySelectorAll(".tile"); 
     for(let i= 0 ; i < elements.length; i++){
         elements[i].addEventListener('click', function(){
-            move(this)
+            if (game.winner == 'none' && game.isDraw == false){
+                move(this)
+            }
         });
     }
 
@@ -99,7 +101,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         const searchParams = new URLSearchParams(window.location.search);
         let player = searchParams.get('player');
         if (player !== game.activePlayer ) {
-            alert('another player turn');
+            setmessage('Another Player Turn');
             return false
         }
         if (!game.isGameOngoing) return false
@@ -169,15 +171,18 @@ document.addEventListener("DOMContentLoaded", function(event) {
     }
 
     function checkGameStatus(){
-        if (game.playerOne.isReady === true && game.playerTwo.isReady === false){
-            setmessage('Player 1 Ready, Waiting for oponent');
-        }else if(game.playerOne.isReady === false && game.playerTwo.isReady === true){
-            setmessage('Player 2 Ready, Waiting for oponent');
-        }else if(game.playerOne.isReady === true && game.playerTwo.isReady === true){
-            setmessage('Game Start');
-            game.isGameOngoing = true;
-        }else {
-            setmessage('Waiting For Player To Get Ready');
+        if(game.winner == 'none' && game.isDraw == false) {
+            if (game.playerOne.isReady === true && game.playerTwo.isReady === false){
+                setmessage('Player 1 Ready, Waiting for oponent');
+            }else if(game.playerOne.isReady === false && game.playerTwo.isReady === true){
+                setmessage('Player 2 Ready, Waiting for oponent');
+            }else if(game.playerOne.isReady === true && game.playerTwo.isReady === true){
+                let currentPlayer = (game.activePlayer == "playerOne") ? game.playerOne : game.playerTwo ;
+                setmessage(currentPlayer.name +' turn');
+                game.isGameOngoing = true;
+            }else {
+                setmessage('Waiting For Player To Get Ready');
+            }
         }
     }
 
