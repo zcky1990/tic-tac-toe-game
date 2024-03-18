@@ -95,5 +95,3 @@ class TicTacToeController < ActionController::Base
         end
     end
 end
-
-GameChannel.broadcast_to('room_fgcdgeggdg', 'test')
